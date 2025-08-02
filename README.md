@@ -38,4 +38,3 @@ export default tseslint.config([
   },
 ])
 ```
-# gym-progress
