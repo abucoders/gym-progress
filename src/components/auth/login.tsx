@@ -2,9 +2,32 @@ import { useAuthState } from "@/stores/auth.store";
 import { Input } from "@/components/ui/input";
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
+import type z from "zod";
+import { loginSchema } from "@/lib/validation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 
 const Login = () => {
   const { setAuth } = useAuthState();
+
+  // Initialize the form with the login schema for validation
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
+
+  // Handle form submission
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    console.log("Form submitted with values:", values);
+  };
 
   return (
     <div className="flex flex-col">
@@ -22,19 +45,41 @@ const Login = () => {
 
       <Separator className="my-4" />
 
-      <div>
-        <div className="">
-          <span className="font-semibold">Email</span>
-          <Input placeholder="example@gmail.com" type="email" />
-        </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-semibold">Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="example@gmail.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div className="mt-3">
-          <span className="font-semibold">Password</span>
-          <Input placeholder="******" type="password" />
-        </div>
-      </div>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-semibold">Password</FormLabel>
+                <FormControl>
+                  <Input type="password" placeholder="*******" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-      <Button className="w-full h-12 mt-3 cursor-pointer">Login</Button>
+          <Button type="submit" className="w-full h-12 cursor-pointer">
+            Login
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 };
