@@ -4,9 +4,25 @@ import men from "@/assets/men.png";
 import type { ProgramsItems } from "@/interface";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { Card } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useUserState } from "@/stores/user.store";
+import { CgGym } from "react-icons/cg";
+import { LogOutIcon, UserRoundPlus } from "lucide-react";
+import { auth } from "@/firebase";
 
 const Home = () => {
+  // Hooks
+  const { user, setUser } = useUserState();
+  const navigate = useNavigate();
+
+  // onLogout, set user to null
+  const onLogout = () => {
+    auth.signOut().then(() => {
+      setUser(null);
+      navigate("/auth");
+    });
+  };
+
   return (
     <>
       <div className="w-full h-screen flex items-center justify-center">
@@ -20,11 +36,39 @@ const Home = () => {
             you're a beginner
           </p>
 
-          <Link to={"/auth"} className="w-fit mt-6 font-bold h-12">
-            <Button size={"lg"} className="cursor-pointer">
-              Join club now
-            </Button>
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-2 w-fit mt-6">
+              <Link to={"/dashboard"}>
+                <Button
+                  size={"lg"}
+                  variant={"secondary"}
+                  className="cursor-pointer"
+                >
+                  <CgGym />
+                  Go to GYM
+                </Button>
+              </Link>
+
+              <Button
+                size={"lg"}
+                variant={"destructive"}
+                className="cursor-pointer"
+                onClick={() => onLogout()}
+              >
+                <LogOutIcon />
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Link to={"/auth"} className="w-fit mt-6 font-bold h-12">
+                <Button size={"lg"} className="cursor-pointer">
+                  <UserRoundPlus />
+                  Join club now
+                </Button>
+              </Link>
+            </>
+          )}
 
           <div className="mt-24">
             <p className="text-muted-foreground uppercase">as featured in</p>

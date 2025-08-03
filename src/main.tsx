@@ -4,12 +4,15 @@ import App from "@/app";
 import "./style/index.css";
 import { ThemeProvider } from "./components/providers/theme-provider";
 import { BrowserRouter } from "react-router-dom";
+import AuthProvider from "@/components/providers/auth-provider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <ThemeProvider defaultTheme="dark" storageKey="gym-theme">
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
   </StrictMode>
