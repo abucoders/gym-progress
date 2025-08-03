@@ -14,9 +14,25 @@ import { useForm } from "react-hook-form";
 import { registerSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type z from "zod";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebase";
+import { useNavigate } from "react-router-dom";
+import { useAsync } from "@/hooks/useAsync";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Terminal } from "lucide-react";
+import FillLoading from "../shared/fill-loading";
+
+// Function to register a new user with email and password
+const registerUser = async (email: string, password: string) => {
+  return await createUserWithEmailAndPassword(auth, email, password);
+};
 
 const Register = () => {
+  // Hooks
+  const { execute: register, isLoading, error } = useAsync(registerUser);
+
   const { setAuth } = useAuthState();
+  const navigate = useNavigate();
 
   // Initialize the form with the register schema for validation
   const form = useForm<z.infer<typeof registerSchema>>({
@@ -26,11 +42,17 @@ const Register = () => {
 
   // Handle form submission
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
-    console.log("Form submitted with values:", values);
+    const { email, password } = values;
+    const res = await register(email, password);
+    if (res?.user) {
+      navigate("/");
+    }
   };
 
   return (
     <div className="flex flex-col">
+      {isLoading && <FillLoading />}
+
       <h2 className="text-xl font-bold">Register</h2>
 
       <p className="text-muted-foreground">
@@ -43,6 +65,13 @@ const Register = () => {
         </span>
       </p>
 
+      {error && (
+        <Alert variant="destructive">
+          <Terminal />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
       <Separator className="my-4" />
 
       <Form {...form}>
@@ -54,7 +83,11 @@ const Register = () => {
               <FormItem>
                 <FormLabel className="font-semibold">Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="example@gmail.com" {...field} />
+                  <Input
+                    placeholder="example@gmail.com"
+                    disabled={isLoading}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -69,7 +102,12 @@ const Register = () => {
                 <FormItem>
                   <FormLabel className="font-semibold">Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="*******" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="*******"
+                      disabled={isLoading}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -85,7 +123,12 @@ const Register = () => {
                     Confirm password
                   </FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="*******" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="*******"
+                      disabled={isLoading}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -93,7 +136,11 @@ const Register = () => {
             />
           </div>
 
-          <Button type="submit" className="w-full h-12 cursor-pointer">
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-12 cursor-pointer"
+          >
             Register
           </Button>
         </form>

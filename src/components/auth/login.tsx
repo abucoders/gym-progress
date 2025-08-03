@@ -14,9 +14,26 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { auth } from "@/firebase";
+import { useAsync } from "@/hooks/useAsync";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Terminal } from "lucide-react";
+import FillLoading from "../shared/fill-loading";
+
+// Function to log in a user with email and password
+const loginUser = async (email: string, password: string) => {
+  return await signInWithEmailAndPassword(auth, email, password);
+};
 
 const Login = () => {
+  // Hooks
+  const { execute: login, isLoading, error } = useAsync(loginUser);
+  console.log(error);
+
   const { setAuth } = useAuthState();
+  const navigate = useNavigate();
 
   // Initialize the form with the login schema for validation
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -26,11 +43,17 @@ const Login = () => {
 
   // Handle form submission
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    console.log("Form submitted with values:", values);
+    const { email, password } = values;
+    const res = await login(email, password);
+    if (res?.user) {
+      navigate("/");
+    }
   };
 
   return (
     <div className="flex flex-col">
+      {isLoading && <FillLoading />}
+
       <h2 className="text-xl font-bold">Login</h2>
 
       <p className="text-muted-foreground">
@@ -43,6 +66,13 @@ const Login = () => {
         </span>
       </p>
 
+      {error && (
+        <Alert variant="destructive">
+          <Terminal />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
       <Separator className="my-4" />
 
       <Form {...form}>
@@ -54,7 +84,11 @@ const Login = () => {
               <FormItem>
                 <FormLabel className="font-semibold">Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="example@gmail.com" {...field} />
+                  <Input
+                    placeholder="example@gmail.com"
+                    disabled={isLoading}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -68,14 +102,23 @@ const Login = () => {
               <FormItem>
                 <FormLabel className="font-semibold">Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="*******" {...field} />
+                  <Input
+                    type="password"
+                    placeholder="*******"
+                    disabled={isLoading}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button type="submit" className="w-full h-12 cursor-pointer">
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-12 cursor-pointer"
+          >
             Login
           </Button>
         </form>
