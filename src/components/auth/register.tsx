@@ -21,6 +21,7 @@ import { useAsync } from "@/hooks/useAsync";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Terminal } from "lucide-react";
 import FillLoading from "../shared/fill-loading";
+import { useUserState } from "@/stores/user.store";
 
 // Function to register a new user with email and password
 const registerUser = async (email: string, password: string) => {
@@ -33,6 +34,7 @@ const Register = () => {
 
   const { setAuth } = useAuthState();
   const navigate = useNavigate();
+  const { setUser } = useUserState();
 
   // Initialize the form with the register schema for validation
   const form = useForm<z.infer<typeof registerSchema>>({
@@ -45,6 +47,7 @@ const Register = () => {
     const { email, password } = values;
     const res = await register(email, password);
     if (res?.user) {
+      setUser(res.user);
       navigate("/");
     }
   };

@@ -17,3 +17,8 @@ export const registerSchema = z
     message: "Passwords don't match",
     path: ["confirm"], // path of error
   });
+
+// Task Schema
+export const taskSchema = z.object({
+  title: z.string().min(5),
+});

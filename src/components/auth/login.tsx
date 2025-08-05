@@ -21,6 +21,7 @@ import { useAsync } from "@/hooks/useAsync";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Terminal } from "lucide-react";
 import FillLoading from "../shared/fill-loading";
+import { useUserState } from "@/stores/user.store";
 
 // Function to log in a user with email and password
 const loginUser = async (email: string, password: string) => {
@@ -34,6 +35,7 @@ const Login = () => {
 
   const { setAuth } = useAuthState();
   const navigate = useNavigate();
+  const { setUser } = useUserState();
 
   // Initialize the form with the login schema for validation
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -46,6 +48,7 @@ const Login = () => {
     const { email, password } = values;
     const res = await login(email, password);
     if (res?.user) {
+      setUser(res.user);
       navigate("/");
     }
   };

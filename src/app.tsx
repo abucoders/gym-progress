@@ -1,6 +1,7 @@
 import Navbar from "@/components/shared/navbar";
 import { Home, Auth, Dashboard } from "@/pages/routes";
 import { Route, Routes } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
 
 const App = () => {
   return (
@@ -11,6 +12,9 @@ const App = () => {
         <Route path="/auth" element={<Auth />} />
         <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
+
+      {/* Sonner */}
+      <Toaster position="bottom-right" />
     </>
   );
 };
