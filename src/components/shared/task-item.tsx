@@ -4,18 +4,23 @@ import { HiStatusOnline } from "react-icons/hi";
 import { CiPlay1 } from "react-icons/ci";
 import { Button } from "../ui/button";
 import { Edit2, Trash } from "lucide-react";
+import type { ITask } from "@/interface";
 
-const TaskItem = () => {
+interface Props {
+  task: ITask;
+}
+
+const TaskItem = ({ task }: Props) => {
   return (
     <Card className="w-full p-4 shadow-md grid grid-cols-4 items-center relative">
       <div className="flex gap-1 items-center col-span-2 ">
         <MdTaskAlt className="text-green-500" />
-        <div className="text-sm font-semibold capitalize">task tame</div>
+        <div className="text-sm font-semibold capitalize">{task.title}</div>
       </div>
 
       <div className="flex gap-1 items-center">
         <HiStatusOnline />
-        <span className="capitalize text-sm">Unstarted</span>
+        <span className="capitalize text-sm">{task.status}</span>
       </div>
 
       <div className="flex gap-1 items-center justify-self-end">
