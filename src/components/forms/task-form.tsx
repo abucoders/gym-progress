@@ -12,13 +12,12 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { useState } from "react";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "@/firebase";
 import { useUserState } from "@/stores/user.store";
 import { toast } from "sonner";
 import FillLoading from "@/components/shared/fill-loading";
+import type { ITaskFormProps } from "@/interface";
 
-const TaskForm = () => {
+const TaskForm = ({ title = "", handler }: ITaskFormProps) => {
   // Hooks
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useUserState();
@@ -26,33 +25,24 @@ const TaskForm = () => {
   // Initialize the form with the task schema for validation
   const form = useForm<z.infer<typeof taskSchema>>({
     resolver: zodResolver(taskSchema),
-    defaultValues: { title: "" },
+    defaultValues: { title },
   });
 
   // Handle form submission
   const onSubmit = async (values: z.infer<typeof taskSchema>) => {
-    const { title } = values;
-
     if (!user) {
       console.error("User is not authenticated");
       return;
     }
-
     setIsLoading(true);
 
-    const promise = addDoc(collection(db, "tasks"), {
-      title,
-      status: "unstarted",
-      startTime: null,
-      endTime: null,
-      userId: user?.uid,
-    }).finally(() => {
+    const promise = handler(values).finally(() => {
       setIsLoading(false);
     });
 
     toast.promise(promise, {
       loading: "Loading...",
-      success: "Successfully!",
+      success: "Success!",
       error: "Something went wrong!",
     });
   };
