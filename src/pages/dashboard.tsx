@@ -12,11 +12,12 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { db } from "@/firebase";
+import type { ITask } from "@/interface";
 import type { taskSchema } from "@/lib/validation";
 import { TaskService } from "@/service/task.service";
 import { useUserState } from "@/stores/user.store";
 import { useQuery } from "@tanstack/react-query";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { BadgePlus, Terminal } from "lucide-react";
 import { useState } from "react";
 import type z from "zod";
@@ -25,14 +26,15 @@ const Dashboard = () => {
   // Hooks
   const { user } = useUserState();
   const [open, setOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentTask, setCurrentTask] = useState<ITask | null>(null);
 
   const { isPending, error, data, refetch } = useQuery({
     queryKey: ["tasks-data"],
     queryFn: TaskService.getTasks,
   });
 
-  console.log(data);
-
+  // Function to handle adding a new task
   const onAdd = async (values: z.infer<typeof taskSchema>) => {
     if (!user) {
       console.error("User is not authenticated");
@@ -48,6 +50,29 @@ const Dashboard = () => {
     })
       .then(() => refetch())
       .finally(() => setOpen(false));
+  };
+
+  // Function to handle editing a task
+  const onStartEditing = (task: ITask) => {
+    setIsEditing(true);
+    setCurrentTask(task);
+  };
+
+  // Function to handle updating a task
+  const onUpdate = async (values: z.infer<typeof taskSchema>) => {
+    if (!user) {
+      console.error("User is not authenticated");
+      return;
+    }
+    if (!currentTask) {
+      console.error("No task is currently being edited");
+      return;
+    }
+
+    const ref = doc(db, "tasks", currentTask.id);
+    return updateDoc(ref, { title: values.title })
+      .then(() => refetch())
+      .finally(() => setIsEditing(false));
   };
 
   return (
@@ -74,9 +99,23 @@ const Dashboard = () => {
                   </Alert>
                 )}
 
-                {data?.tasks.map(task => (
-                  <TaskItem key={task.id} task={task} />
-                ))}
+                {!isEditing &&
+                  data?.tasks.map(task => (
+                    <TaskItem
+                      key={task.id}
+                      task={task}
+                      onStartEditing={() => onStartEditing(task)}
+                    />
+                  ))}
+
+                {isEditing && (
+                  <TaskForm
+                    title={currentTask?.title}
+                    isEdit
+                    onClose={() => setIsEditing(false)}
+                    handler={onUpdate}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -99,6 +138,7 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Task Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger className="cursor-pointer"></DialogTrigger>
 

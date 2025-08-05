@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import FillLoading from "@/components/shared/fill-loading";
 import type { ITaskFormProps } from "@/interface";
 
-const TaskForm = ({ title = "", handler }: ITaskFormProps) => {
+const TaskForm = ({ title = "", handler, isEdit, onClose }: ITaskFormProps) => {
   // Hooks
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useUserState();
@@ -70,13 +70,38 @@ const TaskForm = ({ title = "", handler }: ITaskFormProps) => {
           />
 
           <div className="flex justify-end">
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="h-10 cursor-pointer"
-            >
-              Submit
-            </Button>
+            {isEdit ? (
+              <>
+                {/* Close */}
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="h-10 mr-2 cursor-pointer"
+                  onClick={onClose}
+                  disabled={isLoading}
+                >
+                  Close
+                </Button>
+
+                {/* Save */}
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  disabled={isLoading}
+                  className="h-10 mr-2 cursor-pointer"
+                >
+                  Save
+                </Button>
+              </>
+            ) : (
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="h-10 cursor-pointer"
+              >
+                Submit
+              </Button>
+            )}
           </div>
         </form>
       </Form>
