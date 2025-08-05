@@ -1,6 +1,6 @@
-import { db } from "@/firebase";
+import { auth, db } from "@/firebase";
 import type { ITask, ITaskData } from "@/interface";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import {
   endOfMonth,
   endOfWeek,
@@ -21,7 +21,10 @@ export const TaskService = {
     const monthStart = startOfMonth(now);
     const monthEnd = endOfMonth(now);
 
-    const q = collection(db, "tasks");
+    const q = query(
+      collection(db, "tasks"),
+      where("userId", "==", auth.currentUser?.uid)
+    );
     const querySnapshot = await getDocs(q);
 
     let taskData: ITaskData;
