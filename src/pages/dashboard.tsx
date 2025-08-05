@@ -17,9 +17,16 @@ import type { taskSchema } from "@/lib/validation";
 import { TaskService } from "@/service/task.service";
 import { useUserState } from "@/stores/user.store";
 import { useQuery } from "@tanstack/react-query";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { BadgePlus, Terminal } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import type z from "zod";
 
 const Dashboard = () => {
@@ -28,6 +35,7 @@ const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTask, setCurrentTask] = useState<ITask | null>(null);
+  const [isDeleteng, setIsDeleteng] = useState(false);
 
   const { isPending, error, data, refetch } = useQuery({
     queryKey: ["tasks-data"],
@@ -75,6 +83,27 @@ const Dashboard = () => {
       .finally(() => setIsEditing(false));
   };
 
+  // Function to handle deleting a task
+  const onDelete = async (id: string) => {
+    if (!user) {
+      console.error("User is not authenticated");
+      return;
+    }
+
+    setIsDeleteng(true);
+
+    const ref = doc(db, "tasks", id);
+    const promise = deleteDoc(ref)
+      .then(() => refetch())
+      .finally(() => setIsDeleteng(false));
+
+    toast.promise(promise, {
+      loading: "Loading....",
+      success: "Successfull deleted!",
+      error: "Smething went wrong!",
+    });
+  };
+
   return (
     <>
       <div className="h-screen max-w-6xl mx-auto flex items-center">
@@ -91,7 +120,7 @@ const Dashboard = () => {
 
             <div className="w-full p-4 rounded-md flex justify-between bg-gradient-to-b from-background to-secondary relative min-h-60">
               <div className="w-full flex flex-col space-y-3">
-                {isPending && <FillLoading />}
+                {isPending || (isDeleteng && <FillLoading />)}
                 {error && (
                   <Alert variant="destructive">
                     <Terminal />
@@ -105,6 +134,7 @@ const Dashboard = () => {
                       key={task.id}
                       task={task}
                       onStartEditing={() => onStartEditing(task)}
+                      onDelete={() => onDelete(task.id)}
                     />
                   ))}
 
