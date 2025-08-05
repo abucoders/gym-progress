@@ -31,7 +31,6 @@ const loginUser = async (email: string, password: string) => {
 const Login = () => {
   // Hooks
   const { execute: login, isLoading, error } = useAsync(loginUser);
-  console.log(error);
 
   const { setAuth } = useAuthState();
   const navigate = useNavigate();

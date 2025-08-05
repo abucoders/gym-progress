@@ -75,7 +75,13 @@ const UserBox = () => {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="cursor-pointer" variant="default">
+        <DropdownMenuItem
+          className="cursor-pointer"
+          variant="default"
+          onClick={() => {
+            navigate("/dashboard");
+          }}
+        >
           <CgGym />
           <span>GYM</span>
         </DropdownMenuItem>
