@@ -17,6 +17,7 @@ import type { taskSchema } from "@/lib/validation";
 import { TaskService } from "@/service/task.service";
 import { useUserState } from "@/stores/user.store";
 import { useQuery } from "@tanstack/react-query";
+import { addMilliseconds, addMinutes, format } from "date-fns";
 import {
   addDoc,
   collection,
@@ -104,6 +105,16 @@ const Dashboard = () => {
     });
   };
 
+  // Get formatted date from milliseconds
+  const getFormatDate = (time: number | undefined) => {
+    const date = addMilliseconds(new Date(0), time || 0);
+    const formattedTime = format(
+      addMinutes(date, date.getTimezoneOffset()),
+      "HH:mm:ss"
+    );
+    return formattedTime === "00:00:00" ? "00:00" : formattedTime;
+  };
+
   return (
     <>
       <div className="h-screen max-w-6xl mx-auto flex items-center">
@@ -118,6 +129,7 @@ const Dashboard = () => {
 
             <Separator />
 
+            {/* Task items */}
             <div className="w-full p-4 rounded-md flex justify-between bg-gradient-to-b from-background to-secondary relative min-h-60">
               <div className="w-full flex flex-col space-y-3">
                 {isPending || (isDeleteng && <FillLoading />)}
@@ -155,15 +167,21 @@ const Dashboard = () => {
           <div className="flex flex-col space-y-3 w-full">
             <div className="p-4 rounded-md bg-gradient-to-r bg-blue-900 to-secondary relative h-24">
               <div className="text-2xl font-bold capitalize">Total week</div>
-              <div className="text-3xl font-bold">02:08:47</div>
+              <div className="text-3xl font-bold">
+                {getFormatDate(data?.weekTotal)}
+              </div>
             </div>
             <div className="p-4 rounded-md bg-gradient-to-r from-secondary to-secondary relative h-24">
               <div className="text-2xl font-bold capitalize">Total month</div>
-              <div className="text-3xl font-bold">02:08:47</div>
+              <div className="text-3xl font-bold">
+                {getFormatDate(data?.mothTotal)}
+              </div>
             </div>
             <div className="p-4 rounded-md bg-gradient-to-r from-destructive to-secondary relative h-24">
               <div className="text-2xl font-bold capitalize">Total</div>
-              <div className="text-3xl font-bold">02:08:47</div>
+              <div className="text-3xl font-bold">
+                {getFormatDate(data?.total)}
+              </div>
             </div>
           </div>
         </div>
