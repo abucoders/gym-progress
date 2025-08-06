@@ -1,40 +1,68 @@
-# React + TypeScript + Vite
+# 🏋️‍♂️ Gym Progress Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a learning project to track daily gym tasks, total time spent, and weekly/monthly summaries using Firebase and React ecosystem.
 
-Currently, two official plugins are available:
+## 🔥 Preview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![App Preview](./public/preview.png)
 
-## Expanding the ESLint configuration
+## 🚀 Live Demo
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+👉 [Live on Vercel](https://abucoders-gym-progress.vercel.app)
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## ⚙️ Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- 🔐 Firebase Authentication (Email, Google, GitHub, Anonymous)
+- 📋 Task tracking (total time, week/month summaries)
+- 🔄 React Query for async state management
+- 🧪 Form validation with Zod + React Hook Form
+- 🎨 UI with Shadcn UI + TailwindCSS
+- 🌙 Dark mode (via `next-themes`)
+- 💾 Firestore data persistence
+- 🔥 Responsive and modern design
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🛠 Tech Stack
+
+- React + TypeScript
+- Vite
+- Firebase (Auth, Firestore)
+- React Hook Form
+- React Query
+- Zustand
+- Shadcn UI
+- TailwindCSS
+- Zod
+- date-fns
+
+![App Preview](./public/previwe-dashboad.png)
+
+## 👤 Authors
+
+- [@abucoders](https://github.com/abucoders)
+- [@abdulloyev](https://github.com/abdulloyev)
+
+## 🧑‍💻 Getting Started
+
+Clone the project
+
+```bash
+  git clone https://github.com/abucoders/gym-progress.git
+```
+
+Go to the project directory
+
+```bash
+  cd gym-progress
+```
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start the server
+
+```bash
+  npm run dev
 ```
